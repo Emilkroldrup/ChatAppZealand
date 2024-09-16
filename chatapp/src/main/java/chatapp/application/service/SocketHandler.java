@@ -1,9 +1,11 @@
 package chatapp.application.service;
 
-import chatapp.domain.model.Message;
-
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
+
+import chatapp.domain.model.Message;
 
 public class SocketHandler implements Runnable {
     private Socket socket;
