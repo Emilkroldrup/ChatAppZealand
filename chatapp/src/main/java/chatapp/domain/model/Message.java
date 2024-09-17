@@ -21,5 +21,5 @@ public class Message {
     public String toString() {
         return sender + ": " + content;
     }
-    
 }
+

@@ -3,6 +3,7 @@ package chatapp.application.service;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.Socket;
 
 import chatapp.domain.model.Message;
@@ -23,23 +24,33 @@ public class SocketHandler implements Runnable {
         try {
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             String message;
+
+            // Notify the server when a new client connects
+            listener.onMessageReceived(new Message(clientName + " has connected!", "Server"));
+
             while ((message = input.readLine()) != null) {
-                // Notify the listener (e.g., server or client) when a message is received
+                // Send message to the server (clientName is the sender)
                 listener.onMessageReceived(new Message(message, clientName));
             }
         } catch (IOException e) {
-            // Log the exception
-            System.err.println("An error occurred: " + e.getMessage());
+            e.printStackTrace();
         } finally {
             try {
                 socket.close();
             } catch (IOException e) {
-                System.err.println("An error occurred: " + e.getMessage());
+                e.printStackTrace();
             }
         }
     }
 
+    // Send a message to this client
     public void sendMessage(String message) throws IOException {
-        SocketHelper.sendMessage(socket, message);
+        PrintWriter output = new PrintWriter(socket.getOutputStream(), true);
+        output.println(message);
+    }
+
+    // Get the client name
+    public String getClientName() {
+        return clientName;
     }
 }
