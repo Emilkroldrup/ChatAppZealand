@@ -53,4 +53,5 @@ public class SocketHandler implements Runnable {
     public String getClientName() {
         return clientName;
     }
+
 }
