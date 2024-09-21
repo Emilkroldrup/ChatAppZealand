@@ -7,6 +7,10 @@
 # BlueJ files
 *.ctxt
 
+# Ignore environment-specific properties
+application-dev.properties
+
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
