@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-Application<application>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "chatbot.application.Application",
+            "projectName": "application",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}

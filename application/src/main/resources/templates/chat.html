@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title th:text="${title}"></title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+        let socket;
+        
+        function connect() {
+            socket = new WebSocket("ws://localhost:8080/chat-websocket");
+
+            socket.onmessage = function (event) {
+                const messageBox = document.getElementById("message-box");
+                messageBox.value += event.data + "\n";  // Append new messages to the box
+            };
+        }
+
+        function sendMessage() {
+            const messageInput = document.getElementById("message-input").value;
+            socket.send(messageInput);
+            document.getElementById("message-input").value = "";  // Clear input box
+        }
+
+        function disconnect() {
+            socket.close();
+        }
+    </script>
+</head>
+<body onload="connect()">
+    <h1 th:text="${title}"></h1>
+
+    <textarea id="message-box" rows="10" cols="50" readonly></textarea><br/>
+    <input id="message-input" type="text" placeholder="Enter your message"/>
+    <button onclick="sendMessage()">Send</button>
+    <button onclick="disconnect()">Disconnect</button>
+</body>
+</html>
