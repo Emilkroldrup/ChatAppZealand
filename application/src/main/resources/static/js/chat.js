@@ -35,7 +35,7 @@ function disconnect() {
     socket.close();
 }
 
-// Add event listener for Enter key
+// Add event listener for Enter key to sent messages like any other chat application ;) 
 document.addEventListener("DOMContentLoaded", function () {
     const messageInput = document.getElementById("message-input");
     messageInput.addEventListener("keydown", function (event) {
