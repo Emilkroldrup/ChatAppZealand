@@ -4,43 +4,56 @@
     <title th:text="${title}"></title>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/chat.css">
+</head>
+<body onload="connect()">
+    <h1 th:text="${title}"></h1>
+    <div id="chat-container">
+        <div id="message-box"></div>
+        <div class="controls">
+            <input id="message-input" type="text" placeholder="Enter your message"/>
+            <button onclick="sendMessage()">Send</button>
+            <button onclick="disconnect()">Disconnect</button>
+        </div>
+    </div>
+
     <script type="text/javascript">
         let socket;
 
         function connect() {
-            socket = new WebSocket("ws://localhost:8080/chat");
+            socket = new WebSocket("ws://localhost:8080/chat-websocket");
 
             socket.onmessage = function (event) {
                 const messageBox = document.getElementById("message-box");
-                messageBox.value += event.data + "\n";  // Append new messages to the box
-            };
-
-            socket.onclose = function () {
-                console.log("Disconnected from WebSocket");
-            };
-
-            socket.onerror = function (error) {
-                console.error("WebSocket error: ", error);
+                const newMessage = document.createElement("div");
+                newMessage.textContent = event.data;
+                newMessage.classList.add("message", "received");
+                messageBox.appendChild(newMessage);
+                messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll to latest message
             };
         }
 
         function sendMessage() {
-            const messageInput = document.getElementById("message-input").value;
-            socket.send(messageInput);
-            document.getElementById("message-input").value = "";  // Clear input box
+            const messageInput = document.getElementById("message-input");
+            const message = messageInput.value;
+
+            if (message !== '') {
+                socket.send(message);
+
+                const messageBox = document.getElementById("message-box");
+                const sentMessage = document.createElement("div");
+                sentMessage.textContent = "You: " + message;
+                sentMessage.classList.add("message", "you");
+                messageBox.appendChild(sentMessage);
+                messageBox.scrollTop = messageBox.scrollHeight;  // Auto-scroll to bottom
+
+                messageInput.value = "";
+            }
         }
 
         function disconnect() {
             socket.close();
         }
     </script>
-</head>
-<body onload="connect()">
-    <h1 th:text="${title}"></h1>
-
-    <textarea id="message-box" rows="10" cols="50" readonly></textarea><br/>
-    <input id="message-input" type="text" placeholder="Enter your message"/>
-    <button onclick="sendMessage()">Send</button>
-    <button onclick="disconnect()">Disconnect</button>
 </body>
 </html>
