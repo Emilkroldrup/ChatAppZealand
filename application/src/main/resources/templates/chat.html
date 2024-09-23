@@ -6,13 +6,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script type="text/javascript">
         let socket;
-        
+
         function connect() {
-            socket = new WebSocket("ws://localhost:8080/chat-websocket");
+            socket = new WebSocket("ws://localhost:8080/chat");
 
             socket.onmessage = function (event) {
                 const messageBox = document.getElementById("message-box");
                 messageBox.value += event.data + "\n";  // Append new messages to the box
+            };
+
+            socket.onclose = function () {
+                console.log("Disconnected from WebSocket");
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error: ", error);
             };
         }
 
