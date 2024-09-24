@@ -1,42 +1,53 @@
 package chatbot.application.Config;
 
 import org.springframework.web.socket.WebSocketSession;
-import org.springframework.web.socket.handler.TextWebSocketHandler;
-import org.springframework.lang.NonNull;
+
+import java.util.logging.Logger;
+
+import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
 import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketHandler;
+import org.springframework.web.socket.WebSocketMessage;
 
-import java.util.ArrayList;
-import java.util.List;
+// Server sided sockets
+@Component
+public class CustomWebSocketHandler implements WebSocketHandler {
 
-public class CustomWebSocketHandler extends TextWebSocketHandler {
+    Logger logger = Logger.getLogger(CustomWebSocketHandler.class.getName());
 
-    private List<WebSocketSession> sessions = new ArrayList<>();
-
-    @SuppressWarnings("null")
-    @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-        sessions.remove(session); // Removes the session when connection is closed
-        System.out.println("Connection closed: " + session.getId());
+    public CustomWebSocketHandler() {
+        
     }
 
     @Override
-    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
-        sessions.add(session); // Adds the session to the active sessions
-        session.sendMessage(new TextMessage("Connected to the chat!"));
+    public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+        logger.info("Connection established on session: " + session.getId());
     }
 
-    // There is a method to handle all kinds of messages if needed in the Interface
+    @Override
+    public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
+        String msgString = (String) message.getPayload();
+        logger.info(msgString);
+        session.sendMessage(new TextMessage("Attempts to send..." + session +" - " + msgString));
+        Thread.sleep(1000);
+        session.sendMessage(new TextMessage("Completeded attempt. " + msgString));
+        
+    }
 
     @Override
-    protected void handleTextMessage(@NonNull WebSocketSession session, @NonNull TextMessage message) throws Exception {
-        String incomingMessage = message.getPayload();
-        System.out.println("Received message: " + incomingMessage);
+    public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
+        logger.info("Error occured: " + exception.getMessage() + " on session: " + session.getId());
+    }
 
-        // Broadcasts the message to all connected sessions
-        for (WebSocketSession s : sessions) {
-            s.sendMessage(new TextMessage("User: " + incomingMessage));
-        }
+    @Override
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
+        logger.info(String.format("Connection closed on session: %s with status: %d", session.getId(), closeStatus.getCode()));
+    }
+
+    @Override
+    public boolean supportsPartialMessages() {
+        return false;
     }
 
 }

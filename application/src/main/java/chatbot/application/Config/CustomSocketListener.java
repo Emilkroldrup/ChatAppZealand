@@ -6,20 +6,14 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 
+// CLient sided sockets
 public class CustomSocketListener implements WebSocket.Listener {
-    /** 
-    @Override
-    public CompletionStage<?> onBinary(WebSocket webSocket, ByteBuffer data, boolean last) {
-        
-        return Listener.super.onBinary(webSocket, data, last);
-    }
-        */
 
 
     @Override
     public void onOpen(WebSocket webSocket) {
         System.out.println("WebSocket connection opened. ");
-        webSocket.request(1); // SHould start listening for messages
+        webSocket.request(1); // Should start listening for messages
         //Listener.super.onOpen(webSocket);
     }
 
@@ -29,7 +23,6 @@ public class CustomSocketListener implements WebSocket.Listener {
         webSocket.request(1); // Request to keep receiving messages
         return CompletableFuture.completedFuture(null);
     }
-    
     
     @Override
     public CompletionStage<?> onClose(WebSocket webSocket, int statusCode, String reason) {
