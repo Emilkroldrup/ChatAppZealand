@@ -22,15 +22,13 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Broadcast the message to all connected clients
+        // Broadcast the message to all connected clients except the sender
         synchronized (sessions) {
             System.out.println("Broadcasting message from session: " + session.getId() + " to " + sessions.size() + " clients");
             for (WebSocketSession webSocketSession : sessions) {
-                if (webSocketSession.isOpen()) {
+                if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
                     System.out.println("Sending message to session: " + webSocketSession.getId());
                     webSocketSession.sendMessage(new TextMessage("Client " + session.getId() + ": " + message.getPayload()));
-                } else {
-                    System.out.println("Session is closed: " + webSocketSession.getId());
                 }
             }
         }
