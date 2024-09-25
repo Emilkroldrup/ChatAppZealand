@@ -28,26 +28,26 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
-    protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Retrieve the username stored by the handshake interceptor
-        String username = (String) session.getAttributes().get("username");
+protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+    // Retrieve the username stored by the handshake interceptor
+    String username = (String) session.getAttributes().get("username");
 
-        if (username != null) {
-            System.out.println("User is authenticated: " + username);
-            String formattedMessage = username + ": " + message.getPayload();
+    if (username != null) {
+        System.out.println("User is authenticated: " + username);
+        String formattedMessage = username + ": " + message.getPayload();
 
-            // Broadcast the message to all connected clients
-            synchronized (sessions) {
-                for (WebSocketSession webSocketSession : sessions) {
-                    if (webSocketSession.isOpen()) {
-                        webSocketSession.sendMessage(new TextMessage(formattedMessage));
-                    }
+        // Broadcast the message to all connected clients except the sender
+        synchronized (sessions) {
+            for (WebSocketSession webSocketSession : sessions) {
+                if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
+                    webSocketSession.sendMessage(new TextMessage(formattedMessage));
                 }
             }
-        } else {
-            System.out.println("User is not authenticated, message not sent.");
         }
+    } else {
+        System.out.println("User is not authenticated, message not sent.");
     }
+}
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status) throws Exception {
