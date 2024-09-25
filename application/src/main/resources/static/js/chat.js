@@ -2,31 +2,38 @@ let socket;
 let roomId = prompt("Enter chat room ID:");
 
 function connect() {
-    if (socket == null || socket.readyState === WebSocket.CLOSED) {
-        socket = new WebSocket("ws://localhost:8080/chat-websocket?roomId=" + roomId);
+    if (roomId) {
+        // Update the chat room title
+        document.querySelector('h1').textContent = "Chat Room: " + roomId;
 
-        socket.onopen = function () {
-            console.log("WebSocket connection established to room " + roomId);
-        };
+        if (socket == null || socket.readyState === WebSocket.CLOSED) {
+            socket = new WebSocket("ws://localhost:8080/chat-websocket?roomId=" + roomId);
 
-        socket.onmessage = function (event) {
-            const messageBox = document.getElementById("message-box");
-            const newMessage = document.createElement("div");
-            newMessage.textContent = event.data;
-            newMessage.classList.add("message", "received");
-            messageBox.appendChild(newMessage);
-            messageBox.scrollTop = messageBox.scrollHeight;
-        };
+            socket.onopen = function () {
+                console.log("WebSocket connection established to room " + roomId);
+            };
 
-        socket.onclose = function (event) {
-            console.log("WebSocket connection closed: ", event);
-        };
+            socket.onmessage = function (event) {
+                const messageBox = document.getElementById("message-box");
+                const newMessage = document.createElement("div");
+                newMessage.textContent = event.data;
+                newMessage.classList.add("message", "received");
+                messageBox.appendChild(newMessage);
+                messageBox.scrollTop = messageBox.scrollHeight;
+            };
 
-        socket.onerror = function (error) {
-            console.error("WebSocket error observed: ", error);
-        };
+            socket.onclose = function (event) {
+                console.log("WebSocket connection closed: ", event);
+            };
+
+            socket.onerror = function (error) {
+                console.error("WebSocket error observed: ", error);
+            };
+        } else {
+            console.log("WebSocket is already connected.");
+        }
     } else {
-        console.log("WebSocket is already connected.");
+        console.error("Room ID is required.");
     }
 }
 
