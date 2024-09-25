@@ -12,21 +12,16 @@ import chatbot.application.Services.UserService;
 @SpringBootApplication
 public class Application {
 
-    private final UserService userService;
-
-    public Application(UserService userService) {
-        this.userService = userService;
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
     @Bean
-    public ChatWebSocketHandler chatWebSocketHandler() {
-        return new ChatWebSocketHandler(userService); // Pass the userService to the handler
+    public ChatWebSocketHandler chatWebSocketHandler(UserService userService) {
+        return new ChatWebSocketHandler(userService);
     }
 
+    // Ensure WebSocket connection only after Spring Boot app is ready
     @EventListener(ApplicationReadyEvent.class)
     public void startWebSocketConnectionAfterBoot() {
         System.out.println("Spring Boot has fully started and WebSocket is ready.");

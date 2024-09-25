@@ -2,27 +2,28 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>Login</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/login.css}">
 </head>
-<body>
-    <h2>Login Page</h2>
-    <form th:action="@{/login}" method="post">
-        <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username">
-        </div>
-        <div>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password">
-        </div>
-        <div>
-            <button type="submit">Login</button>
-        </div>
-        
-    </form>
+<body class="login-body">
+    <div class="login-container">
+        <h2 class="login-title">Login Page</h2>
+        <form th:action="@{/login}" method="post" class="login-form">
+            <div class="form-group">
+                <label for="username" class="form-label">Username:</label>
+                <input type="text" id="username" name="username" class="form-input">
+            </div>
+            <div class="form-group">
+                <label for="password" class="form-label">Password:</label>
+                <input type="password" id="password" name="password" class="form-input">
+            </div>
+            <div class="form-group">
+                <button type="submit" class="login-button">Login</button>
+            </div>
+        </form>
 
-    <div>
-        <a th:href="@{/users/create}" style="text-decoration: none;">Create new user</a>
+        <div class="create-account">
+            <a th:href="@{/users/create}" class="create-link">Create new user</a>
+        </div>
     </div>
-    
 </body>
 </html>
