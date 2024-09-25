@@ -1,11 +1,12 @@
 let socket;
+let roomId = prompt("Enter chat room ID:");
 
 function connect() {
     if (socket == null || socket.readyState === WebSocket.CLOSED) {
-        socket = new WebSocket("ws://localhost:8080/chat-websocket");
+        socket = new WebSocket("ws://localhost:8080/chat-websocket?roomId=" + roomId);
 
         socket.onopen = function () {
-            console.log("WebSocket connection established");
+            console.log("WebSocket connection established to room " + roomId);
         };
 
         socket.onmessage = function (event) {
@@ -14,7 +15,7 @@ function connect() {
             newMessage.textContent = event.data;
             newMessage.classList.add("message", "received");
             messageBox.appendChild(newMessage);
-            messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll to latest message
+            messageBox.scrollTop = messageBox.scrollHeight;
         };
 
         socket.onclose = function (event) {
@@ -41,7 +42,7 @@ function sendMessage() {
         sentMessage.textContent = "You: " + message;
         sentMessage.classList.add("message", "you");
         messageBox.appendChild(sentMessage);
-        messageBox.scrollTop = messageBox.scrollHeight;  // Auto-scroll to bottom
+        messageBox.scrollTop = messageBox.scrollHeight;
 
         messageInput.value = "";
     } else {
@@ -60,4 +61,3 @@ function handleKeyPress(event) {
         sendMessage();
     }
 }
-

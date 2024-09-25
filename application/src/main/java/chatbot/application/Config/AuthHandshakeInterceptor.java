@@ -14,15 +14,17 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
-        // Retrieve the authentication object from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
-            // Store the username in WebSocket session attributes
             attributes.put("username", authentication.getName());
+
+            // Extract the room ID from the query parameters or set a default one
+            String roomId = request.getURI().getQuery().split("=")[1];
+            attributes.put("roomId", roomId);
         }
 
-        return true; // Continue with the handshake
+        return true;
     }
 
     @Override
