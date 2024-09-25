@@ -2,30 +2,32 @@ package chatbot.application.Config;
 
 import java.util.Map;
 
+import org.springframework.http.server.ServerHttpRequest;
+import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Component;
+import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
-@Component
 public class AuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
-    public boolean beforeHandshake(org.springframework.http.server.ServerHttpRequest request,
-                                   org.springframework.http.server.ServerHttpResponse response,
-                                   org.springframework.web.socket.WebSocketHandler wsHandler,
-                                   Map<String, Object> attributes) throws Exception {
+    public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                                   WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+        // Retrieve the authentication object from the security context
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
         if (authentication != null && authentication.isAuthenticated()) {
-            attributes.put("username", authentication.getName()); // Save username in session attributes
+            // Store the username in WebSocket session attributes
+            attributes.put("username", authentication.getName());
         }
-        return true;
+
+        return true; // Continue with the handshake
     }
 
     @Override
-    public void afterHandshake(org.springframework.http.server.ServerHttpRequest request,
-                               org.springframework.http.server.ServerHttpResponse response,
-                               org.springframework.web.socket.WebSocketHandler wsHandler, Exception exception) {
-        // Do nothing
+    public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
+                               WebSocketHandler wsHandler, Exception exception) {
+        // No post-handshake logic needed
     }
 }

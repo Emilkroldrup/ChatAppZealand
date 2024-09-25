@@ -8,49 +8,44 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
-import chatbot.application.Entities.User;
 import chatbot.application.Services.UserService;
 
 public class ChatWebSocketHandler extends TextWebSocketHandler {
 
     private final UserService userService;
-    private static final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
 
     public ChatWebSocketHandler(UserService userService) {
         this.userService = userService;
     }
 
+    // Set to store all connected sessions
+    private static final Set<WebSocketSession> sessions = Collections.synchronizedSet(new HashSet<>());
+
     @Override
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         sessions.add(session);
-        System.out.println("Connected: " + session.getId() + " Total sessions: " + sessions.size());
+        System.out.println("Total sessions: " + sessions.size());
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-        // Get username from the WebSocket session attributes
+        // Retrieve the username stored by the handshake interceptor
         String username = (String) session.getAttributes().get("username");
 
         if (username != null) {
-            System.out.println("Authenticated username: " + username);
+            System.out.println("User is authenticated: " + username);
+            String formattedMessage = username + ": " + message.getPayload();
 
-            User currentUser = userService.findByUsername(username).orElse(null);
-            if (currentUser != null) {
-                System.out.println("User is authenticated: " + currentUser.getUsername());
-            } else {
-                System.out.println("Authenticated user not found in the database.");
-            }
-        } else {
-            System.out.println("User is not authenticated.");
-        }
-
-        // Broadcast the message to all connected clients except the sender
-        synchronized (sessions) {
-            for (WebSocketSession webSocketSession : sessions) {
-                if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
-                    webSocketSession.sendMessage(new TextMessage("Client " + session.getId() + ": " + message.getPayload()));
+            // Broadcast the message to all connected clients
+            synchronized (sessions) {
+                for (WebSocketSession webSocketSession : sessions) {
+                    if (webSocketSession.isOpen()) {
+                        webSocketSession.sendMessage(new TextMessage(formattedMessage));
+                    }
                 }
             }
+        } else {
+            System.out.println("User is not authenticated, message not sent.");
         }
     }
 

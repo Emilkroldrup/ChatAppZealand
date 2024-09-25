@@ -1,28 +1,26 @@
 package chatbot.application.Config;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import chatbot.application.Services.UserService;
+
 @Configuration
 @EnableWebSocket
 public class WebSocketConfig implements WebSocketConfigurer {
 
-    private final ChatWebSocketHandler chatWebSocketHandler;
-    private final AuthHandshakeInterceptor authHandshakeInterceptor;
+    private final UserService userService;
 
-    @Autowired
-    public WebSocketConfig(ChatWebSocketHandler chatWebSocketHandler, AuthHandshakeInterceptor authHandshakeInterceptor) {
-        this.chatWebSocketHandler = chatWebSocketHandler;
-        this.authHandshakeInterceptor = authHandshakeInterceptor;
+    public WebSocketConfig(UserService userService) {
+        this.userService = userService;
     }
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(chatWebSocketHandler, "/chat-websocket")
+        registry.addHandler(new ChatWebSocketHandler(userService), "/chat-websocket")
                 .setAllowedOrigins("*")
-                .addInterceptors(authHandshakeInterceptor);
+                .addInterceptors(new AuthHandshakeInterceptor());
     }
 }
