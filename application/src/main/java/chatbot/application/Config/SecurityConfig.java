@@ -20,6 +20,7 @@ public class SecurityConfig {
                 .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // Allow static resources
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/h2-console/**").hasRole("ADMIN") // Allow access to the H2 console
+                .requestMatchers("/users/create").permitAll()
                 .anyRequest().authenticated() // All other requests must be authenticated
             )
             .formLogin((form) -> form

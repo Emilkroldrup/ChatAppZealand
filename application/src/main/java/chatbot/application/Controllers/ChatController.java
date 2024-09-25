@@ -17,4 +17,5 @@ public class ChatController {
     public String getLoginPage() {
         return "login";
     }
+
 }

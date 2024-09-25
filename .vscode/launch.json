@@ -2,6 +2,12 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Application",
+            "request": "launch",
+            "mainClass": "chatbot.application.Application"
+        },
+        {
+            "type": "java",
             "name": "Spring Boot-Application<application>",
             "request": "launch",
             "cwd": "${workspaceFolder}",
