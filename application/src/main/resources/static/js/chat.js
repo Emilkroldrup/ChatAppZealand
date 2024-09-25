@@ -1,23 +1,39 @@
 let socket;
 
 function connect() {
-    socket = new WebSocket("ws://localhost:8080/chat-websocket");
+    if (socket == null || socket.readyState === WebSocket.CLOSED) {
+        socket = new WebSocket("ws://localhost:8080/chat-websocket");
 
-    socket.onmessage = function (event) {
-        const messageBox = document.getElementById("message-box");
-        const newMessage = document.createElement("div");
-        newMessage.textContent = event.data;
-        newMessage.classList.add("message", "received");
-        messageBox.appendChild(newMessage);
-        messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll to latest message
-    };
+        socket.onopen = function () {
+            console.log("WebSocket connection established");
+        };
+
+        socket.onmessage = function (event) {
+            const messageBox = document.getElementById("message-box");
+            const newMessage = document.createElement("div");
+            newMessage.textContent = event.data;
+            newMessage.classList.add("message", "received");
+            messageBox.appendChild(newMessage);
+            messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll to latest message
+        };
+
+        socket.onclose = function (event) {
+            console.log("WebSocket connection closed: ", event);
+        };
+
+        socket.onerror = function (error) {
+            console.error("WebSocket error observed: ", error);
+        };
+    } else {
+        console.log("WebSocket is already connected.");
+    }
 }
 
 function sendMessage() {
     const messageInput = document.getElementById("message-input");
     const message = messageInput.value;
 
-    if (message !== '') {
+    if (message !== '' && socket.readyState === WebSocket.OPEN) {
         socket.send(message);
 
         const messageBox = document.getElementById("message-box");
@@ -28,19 +44,20 @@ function sendMessage() {
         messageBox.scrollTop = messageBox.scrollHeight;  // Auto-scroll to bottom
 
         messageInput.value = "";
+    } else {
+        console.error("WebSocket is not open. Ready state: " + socket.readyState);
     }
 }
 
 function disconnect() {
-    socket.close();
+    if (socket && socket.readyState === WebSocket.OPEN) {
+        socket.close();
+    }
 }
 
-// Add event listener for Enter key to sent messages like any other chat application ;) 
-document.addEventListener("DOMContentLoaded", function () {
-    const messageInput = document.getElementById("message-input");
-    messageInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-            sendMessage();
-        }
-    });
-});
+function handleKeyPress(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+}
+

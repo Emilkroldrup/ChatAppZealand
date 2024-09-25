@@ -12,7 +12,7 @@
     <div id="chat-container">
         <div id="message-box"></div>
         <div class="controls">
-            <input id="message-input" type="text" placeholder="Enter your message"/>
+            <input id="message-input" type="text" placeholder="Enter your message" onkeypress="handleKeyPress(event)"/>
             <button onclick="sendMessage()">Send</button>
             <button onclick="disconnect()">Disconnect</button>
         </div>
