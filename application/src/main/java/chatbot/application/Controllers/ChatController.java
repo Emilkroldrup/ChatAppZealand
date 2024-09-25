@@ -12,4 +12,9 @@ public class ChatController {
         model.addAttribute("title", "WebSocket Chat");
         return "chat";
     }
+
+    @GetMapping("/login")
+    public String getLoginPage() {
+        return "login";
+    }
 }
