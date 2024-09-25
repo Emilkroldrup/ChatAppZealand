@@ -39,7 +39,8 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             String formattedMessage = username + ": " + message.getPayload();
             System.out.println("Sending message to room: " + roomId);
 
-            // Broadcast the message to all connected clients in the same room
+            // Broadcast the message to all connected clients in the same room,
+            // excluding the sender (to avoid echoing back the same message)
             synchronized (chatRooms.get(roomId)) {
                 for (WebSocketSession webSocketSession : chatRooms.get(roomId)) {
                     if (webSocketSession.isOpen() && !webSocketSession.getId().equals(session.getId())) {
