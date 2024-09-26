@@ -28,18 +28,17 @@ public class UserController {
         return "login";
     }
 
-    // GET mapping for fetching a user by ID
-    @GetMapping("/{id}")
-    public User getUserById(@PathVariable Long id) {
-        return userService.findById(id).orElse(null);
-    }
-
     // Serve the user creation form (GET request)
     @GetMapping("/create")
     public String showCreateUserForm() {
         return "createUser"; // This corresponds to createUser.html in the templates folder
     }
 
+    // GET mapping for fetching a user by ID
+    @GetMapping("/{id}")
+    public User getUserById(@PathVariable Long id) {
+        return userService.findById(id).orElse(null);
+    }
 }
 
 

@@ -18,4 +18,9 @@ public class ChatController {
         return "login";
     }
 
+    @GetMapping("/error")
+    public String getErrorPage() {
+        return "error";
+    }
+
 }

@@ -13,7 +13,7 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                                   WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
+                                WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
         if (authentication != null && authentication.isAuthenticated()) {
@@ -29,7 +29,7 @@ public class AuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Override
     public void afterHandshake(ServerHttpRequest request, ServerHttpResponse response,
-                               WebSocketHandler wsHandler, Exception exception) {
+                            WebSocketHandler wsHandler, Exception exception) {
         // No post-handshake logic needed
     }
 }
