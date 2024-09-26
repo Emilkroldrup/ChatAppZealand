@@ -19,4 +19,5 @@ public class ChatRestController {
     public List<Chat> getRooms() {
         return chatService.findAll();
     }
+
 }
