@@ -17,7 +17,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
             .authorizeHttpRequests((requests) -> requests
-                .requestMatchers("/css/**", "/js/**", "/images/**").permitAll() // Allow static resources
+                .requestMatchers("/css/**", "/js/**", "/images/**", "/filefolder/**").permitAll() // Allow static resources
                 .requestMatchers("/login").permitAll()
                 .requestMatchers("/h2-console/**").hasRole("ADMIN") // Allow access to the H2 console
                 .requestMatchers("/users/create").permitAll()

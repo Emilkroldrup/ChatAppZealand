@@ -125,3 +125,8 @@ body {
 .controls button:hover {
     background-color: #145dbf;
 }
+
+.download-link {
+    display: block;
+    margin: 5px 0;
+}

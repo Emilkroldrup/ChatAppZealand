@@ -19,7 +19,10 @@
         <div class="controls">
             <input id="message-input" type="text" placeholder="Enter your message" onkeypress="handleKeyPress(event)" disabled/>
             <button onclick="sendMessage()" disabled>Send</button>
+            <input type="file" id="file-input"/>
+            <button onclick="sendBinaryMessage()">Send File</button>
         </div>
     </div>
+
 </body>
 </html>

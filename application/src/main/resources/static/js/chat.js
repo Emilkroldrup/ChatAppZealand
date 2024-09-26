@@ -41,16 +41,50 @@ function connectToRoom(roomName) {
 
     socket.onmessage = function (event) {
         const messageBox = document.getElementById("message-box");
-        const newMessage = document.createElement("div");
-        newMessage.textContent = event.data;
-
-        // Avoid displaying messages that the user has just sent themselves
-        if (!newMessage.textContent.startsWith("You: ")) {
+    
+        if (typeof event.data === 'string') {
+            // Handle text messages
+            const newMessage = document.createElement("div");
+            newMessage.textContent = event.data;
             newMessage.classList.add("message", "received");
             messageBox.appendChild(newMessage);
             messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll
+        } else if (event.data instanceof ArrayBuffer) {
+            // Handle binary data (ArrayBuffer)
+            handleBinaryData(event.data);
         }
     };
+    
+    function handleBinaryData(arrayBuffer) {
+        // Create a Blob from the ArrayBuffer
+        const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
+    
+        // Create a URL for the Blob object
+        const url = URL.createObjectURL(blob);
+    
+        // Provide a download link for the file
+        const downloadLink = document.createElement("a");
+        downloadLink.href = url;
+        downloadLink.download = "file_" + Date.now() + ".bin"; // Customize the filename
+        downloadLink.textContent = "Click here to download the file";
+        downloadLink.classList.add("download-link");
+    
+        // Append the link to the message box
+        const messageBox = document.getElementById("message-box");
+        const newMessage = document.createElement("div");
+        newMessage.classList.add("message", "received");
+        newMessage.appendChild(downloadLink); // Append the download link
+        messageBox.appendChild(newMessage);
+        messageBox.scrollTop = messageBox.scrollHeight; // Auto-scroll
+    
+        // Revoke the Blob URL after some time to free memory
+        downloadLink.onclick = function () {
+            setTimeout(() => {
+                URL.revokeObjectURL(url); // Free up memory after download
+            }, 100);
+        };
+    }
+    
 
     socket.onclose = function (event) {
         console.log("Disconnected from room: " + roomName);
@@ -82,6 +116,44 @@ function sendMessage() {
         console.error("WebSocket is not open or message is empty.");
     }
 }
+
+function sendBinaryMessage() {
+    const fileInput = document.getElementById("file-input");
+    const file = fileInput.files[0]; // Get the first selected file
+
+    if (!file) {
+        console.error("No file selected.");
+        return;
+    }
+
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+        console.error("WebSocket is not open.");
+        return;
+    }
+
+    // Read the file as a Blob (or ArrayBuffer)
+    const reader = new FileReader();
+
+    reader.onload = function(event) {
+        const binaryData = event.target.result; // This is the file content as ArrayBuffer or Blob
+
+        // Send the binary data via WebSocket
+        try {
+            socket.send(binaryData); // WebSocket can send ArrayBuffer directly
+            console.log("Binary message (file) sent successfully.");
+        } catch (e) {
+            console.error("Error sending binary message:", e);
+        }
+    };
+
+    reader.onerror = function(event) {
+        console.error("Error reading file:", event);
+    };
+
+    // Read the file as ArrayBuffer (you can also use Blob depending on your needs)
+    reader.readAsArrayBuffer(file);
+}
+
 
 function disconnect() {
     if (socket && socket.readyState === WebSocket.OPEN) {
