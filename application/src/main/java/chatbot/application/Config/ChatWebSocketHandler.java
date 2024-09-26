@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.web.socket.BinaryMessage;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
@@ -54,6 +55,11 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
     }
 
     @Override
+    protected void handleBinaryMessage(WebSocketSession session, BinaryMessage message) {
+        
+    }
+
+    @Override
     public void afterConnectionClosed(WebSocketSession session, org.springframework.web.socket.CloseStatus status) throws Exception {
         String roomId = (String) session.getAttributes().get("roomId");
         if (roomId != null) {
@@ -64,4 +70,9 @@ public class ChatWebSocketHandler extends TextWebSocketHandler {
             System.out.println("User left room: " + roomId + " Remaining sessions: " + chatRooms.getOrDefault(roomId, Collections.emptySet()).size());
         }
     }
+
+    
+
+    
+
 }

@@ -24,7 +24,9 @@ public class SecurityConfig {
                 .anyRequest().authenticated() // All other requests must be authenticated
             )
             .formLogin((form) -> form
-                .loginPage("/login").permitAll() // Custom login page
+                .loginPage("/login")
+                .defaultSuccessUrl("/chat", true)  // Redirect to /chat after successful login
+                .permitAll() // Custom login page
             )
             .logout((logout) -> logout.permitAll())
             .csrf((csrf) -> csrf.disable()) // Disable CSRF for H2 console access
